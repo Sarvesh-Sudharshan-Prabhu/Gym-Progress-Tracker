@@ -1,0 +1,24 @@
+def display_interface():
+    print("Gym Progress Tracker")
+    print("1. Add a new workout")
+    print("2. View workout history")
+    print("3. Exit")
+
+def main():
+    while (True):
+        display_interface()
+        choice = input("Enter your choice: ")
+        if (choice == "1"):
+            print("Log a workout")
+            
+        elif choice == "2":
+            print("View workout history")
+            
+        elif choice == "3":
+            print("Goodbye!")
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main() #Basically executes the program when the file is run directly.
+
