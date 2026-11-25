@@ -9,7 +9,8 @@ def main():
         display_interface()
         choice = input("Enter your choice: ")
         if (choice == "1"):
-            print("Log a workout")
+            workout = log_workout()
+            print("Workout logged:", workout)
             
         elif choice == "2":
             print("View workout history")
@@ -22,3 +23,17 @@ def main():
 if __name__ == "__main__":
     main() #Basically executes the program when the file is run directly.
 
+def log_workout():
+    exercise = input("Enter exercise name: ")
+    weight = float(input("Enter weight in lbs: "))
+    sets = int(input("Enter number of sets: "))
+    reps = int(input("Enter number of reps: "))
+
+    workout = {
+        "exercise": exercise,
+        "weight": weight,
+        "sets": sets,
+        "reps": reps
+    }
+
+    return workout
