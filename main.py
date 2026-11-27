@@ -1,5 +1,6 @@
 import csv
 import os
+import math
 from datetime import datetime
 
 def display_interface():
@@ -14,8 +15,8 @@ def main():
         choice = input("Enter your choice: ")
         if (choice == "1"):
             workout = log_workout()
-            save_workout(workout)
-            print("Workout logged:", workout)
+            if save_workout(workout):
+                print("Workout logged:", workout)
 
         elif choice == "2":
             view_workout_history()
@@ -28,25 +29,73 @@ def main():
 
 def save_workout(workout):
     filename = "workouts.csv"
-    file_exists = os.path.exists(filename)
 
-    with open(filename, "a", newline="") as file:
-        writer = csv.DictWriter(
-            file,
-            fieldnames=["date", "exercise", "weight", "sets", "reps"]
-        )
+    try:
+        file_exists = os.path.exists(filename)
+        file_empty = not file_exists or os.path.getsize(filename) == 0
 
-        # Prevent duplicate headers when saving additional workouts.
-        if not file_exists:
-            writer.writeheader()
+        with open(filename, "a", newline="") as file:
+            writer = csv.DictWriter(
+                file,
+                fieldnames=["date", "exercise", "weight", "sets", "reps"]
+            )
 
-        writer.writerow(workout)
+            # Prevent duplicate headers when saving additional workouts.
+            if file_empty:
+                writer.writeheader()
+
+            writer.writerow(workout)
+
+        return True
+
+    except OSError:
+        print("Unable to save workout.")
+        return False
 
 def log_workout():
-    exercise = input("Enter exercise name: ")
-    weight = float(input("Enter weight in lbs: "))
-    sets = int(input("Enter number of sets: "))
-    reps = int(input("Enter number of reps: "))
+    while True:
+        exercise = input("Enter exercise name: ").strip()
+
+        if exercise:
+            break
+
+        print("Exercise name cannot be empty.")
+
+    while True:
+        try:
+            weight = float(input("Enter weight in lbs: "))
+
+            if math.isfinite(weight) and weight >= 0:
+                break
+
+            print("Weight must be a non-negative finite number.")
+
+        except ValueError:
+            print("Please enter a valid number.")
+
+    while True:
+        try:
+            sets = int(input("Enter number of sets: "))
+
+            if sets > 0:
+                break
+
+            print("Sets must be greater than zero.")
+
+        except ValueError:
+            print("Please enter a valid whole number.")
+
+    while True:
+        try:
+            reps = int(input("Enter number of reps: "))
+
+            if reps > 0:
+                break
+
+            print("Reps must be greater than zero.")
+
+        except ValueError:
+            print("Please enter a valid whole number.")
 
     workout = {
     "date": datetime.now().strftime("%Y-%m-%d"),
@@ -66,18 +115,27 @@ def view_workout_history():
         print("No workouts recorded yet.")
         return
 
-    with open(filename, "r", newline="") as file:
-        reader = csv.DictReader(file)
+    try:
+        with open(filename, "r", newline="") as file:
+            reader = csv.DictReader(file)
+            workouts = list(reader)
 
-        print("\n===== Workout History =====")
+            if not workouts:
+                print("No workouts recorded yet.")
+                return
 
-        for workout in reader:
-            print("Date:", workout["date"])
-            print("Exercise:", workout["exercise"])
-            print("Weight:", workout["weight"], "lbs")
-            print("Sets:", workout["sets"])
-            print("Reps:", workout["reps"])
-            print("---------------------------")
+            print("\n===== Workout History =====")
+
+            for workout in workouts:
+                print("Date:", workout["date"])
+                print("Exercise:", workout["exercise"])
+                print("Weight:", workout["weight"], "lbs")
+                print("Sets:", workout["sets"])
+                print("Reps:", workout["reps"])
+                print("---------------------------")
+
+    except (OSError, csv.Error, KeyError):
+        print("Unable to read workout history.")
 
 if __name__ == "__main__":
     main()
