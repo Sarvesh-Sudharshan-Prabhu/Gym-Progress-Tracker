@@ -18,7 +18,7 @@ def main():
             print("Workout logged:", workout)
 
         elif choice == "2":
-            print("View workout history")
+            view_workout_history()
 
         elif choice == "3":
             print("Goodbye!")
@@ -57,6 +57,27 @@ def log_workout():
 }
 
     return workout
+
+def view_workout_history():
+    filename = "workouts.csv"
+
+    # Prevent an error if no workouts have been recorded yet.
+    if not os.path.exists(filename):
+        print("No workouts recorded yet.")
+        return
+
+    with open(filename, "r", newline="") as file:
+        reader = csv.DictReader(file)
+
+        print("\n===== Workout History =====")
+
+        for workout in reader:
+            print("Date:", workout["date"])
+            print("Exercise:", workout["exercise"])
+            print("Weight:", workout["weight"], "lbs")
+            print("Sets:", workout["sets"])
+            print("Reps:", workout["reps"])
+            print("---------------------------")
 
 if __name__ == "__main__":
     main()
